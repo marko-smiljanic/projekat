@@ -20,7 +20,7 @@ def open_file(index):
 if __name__ == "__main__":                                  #ako pokrecemo skruiptu izvrsice se telo, ako je importujemo nece je pokrenuti!!!
     app = QtWidgets.QApplication(sys.argv)                  #obavezan pocetak... pravljenje aplikacije i main prozora
     main_window = QtWidgets.QMainWindow()
-    main_window.resize(640, 480)                            #main prozor mora da se zatvori i izmedju se pise sav kod
+    main_window.resize(1000, 700)                            #main prozor mora da se zatvori i izmedju se pise sav kod
     ###pocetak
 
 

@@ -7,7 +7,7 @@ class StudentModel(QtCore.QAbstractTableModel):
 
     #pomocna metoda
     def get_element(self, index):           #index ima oznacen red i kolonu, a jedan student je jedan red, index je qmodel index objekat
-        return self.students[index.row()]   #vrati iz l;iste studenata studenta na poziciji koja je jednaka redu indeksa
+        return self.students[index.row()]   #vrati iz liste studenata na poziciji koja je jednaka redu indeksa
 
     #moramo da redefinisemo
     def rowCount(self, inex):           #jedan red u tabeli ce biti jedan student
@@ -43,6 +43,6 @@ class StudentModel(QtCore.QAbstractTableModel):
             return True
         return False
 
-    def flags(self, index):
+    def flags(self, index):                                     #zadrzimo sve stare flegove i dodamo novi
         return super().flags(index) | QtCore.Qt.ItemIsEditable  #| == or nad bitovima, zadrzimo stare flegove i dodamo novi da je editable
         
