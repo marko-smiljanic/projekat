@@ -1,20 +1,23 @@
 from PySide2 import QtWidgets, QtGui, QtCore
 
-class StudentModel(QtCore.QAbstractTableModel):
+class GenerickiModel(QtCore.QAbstractTableModel):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.students = []
+        self.lista_objekata = []
 
     #pomocna metoda
     def get_element(self, index):           #index ima oznacen red i kolonu, a jedan student je jedan red, index je qmodel index objekat
-        return self.students[index.row()]   #vrati iz liste studenata na poziciji koja je jednaka redu indeksa
+        return self.lista_objekata[index.row()]   #vrati iz liste studenata na poziciji koja je jednaka redu indeksa
 
     #moramo da redefinisemo
     def rowCount(self, index):           #jedan red u tabeli ce biti jedan student
-        return len(self.students)
+        return len(self.lista_objekata)
 
     def columnCount(self, index):
-        return 2                    #hocemo samo ime i index da prikazujemo
+        if self.rowCount(index) > 0:                  #hocemo samo ime i index da prikazujemo
+            return self.lista_objekata[0].get_no_columns() # dummy funkcija
+        else:
+            return 0
 
     def data(self, index, role=QtCore.Qt.DisplayRole):
         student = self.get_element(index)
@@ -45,4 +48,3 @@ class StudentModel(QtCore.QAbstractTableModel):
 
     def flags(self, index):                                     #zadrzimo sve stare flegove i dodamo novi
         return super().flags(index) | QtCore.Qt.ItemIsEditable  #| == or nad bitovima, zadrzimo stare flegove i dodamo novi da je editable
-        
