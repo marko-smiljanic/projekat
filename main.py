@@ -3,6 +3,8 @@ from PySide2 import QtWidgets, QtGui, QtCore
 
 from structure_dock import StructureDock
 from workspace_widget import WorkspaceWidget
+from genericki_model import GenerickiModel
+import json
 
 def delete_tab(index):
     central_widget.removeTab(index)
@@ -10,10 +12,21 @@ def delete_tab(index):
 def open_file(index):
     path = dock_wgt.model.filePath(index)
     with open(path) as f:
-        text = f.read()
-        new_workspace = WorkspaceWidget(central_widget)
-        central_widget.addTab(new_workspace, path.split("/")[-1])  #ovde setujemo ime novog taba, tj. splitujemo putanju i uzmemo poslednji element
-        new_workspace.show_text(text)
+        # TODO: proveriti da li postoji otvoren tab za ovaj fajl (da bi podaci bili azurni)
+        #   - proci kroz tabove->workspace->model->source
+        #       - ako postoji tab u kojem model.source == file_name: prebacimo fokus na njega
+        #       - u suprotnom: kreiramo novi workspace i tab (kao ispod) i prebacimo fokus na njega
+        #text = f.read()
+        model = None  # izaberemo odgovarajuci model u zavisnosti od naziva file-a
+        file_name = path.split("/")[-1]
+        
+        for m in models:
+            if m.source == file_name:  
+                model = m
+                break
+        new_workspace = WorkspaceWidget(central_widget, model)
+        central_widget.addTab(new_workspace, model.name)  #ovde setujemo ime novog taba, tj. splitujemo putanju i uzmemo poslednji element
+        #new_workspace.show_text(text)
         #print(f.read())
 
 
@@ -21,8 +34,8 @@ if __name__ == "__main__":                                  #ako pokrecemo skrui
     app = QtWidgets.QApplication(sys.argv)                  #obavezan pocetak... pravljenje aplikacije i main prozora
     main_window = QtWidgets.QMainWindow()
     main_window.resize(1000, 700)                            #main prozor mora da se zatvori i izmedju se pise sav kod
+    
     ###pocetak
-
 
     app.setWindowIcon(QtGui.QIcon("icons8-edit-file-64"))
     main_window.setWindowTitle("Editor generickih podataka")
@@ -32,7 +45,7 @@ if __name__ == "__main__":                                  #ako pokrecemo skrui
     menu_file = QtWidgets.QMenu("File")                     #mogu da pravim posebne objekte tipa Menu, ili samo nad menu bar da pozovem ad menu i u parametru napravim novi meni
     menu_bar.addMenu(menu_file)
     menu_bar.addMenu(QtWidgets.QMenu("Edit", menu_bar))     #parent mu je menu_bar jer se nalazi u njemu !!
-    menu_bar.addMenu(QtWidgets.QMenu("Veiw", menu_bar))     #parent moze da se doda ali i ne mora, za ove jednostavne primere bar
+    menu_bar.addMenu(QtWidgets.QMenu("View", menu_bar))     #parent moze da se doda ali i ne mora, za ove jednostavne primere bar
     menu_bar.addMenu(QtWidgets.QMenu("Help", menu_bar))
     main_window.setMenuBar(menu_bar)                        #uglavnom sve sto se dodaje moramo dodati u main window, tj da mu setujemo sta smo dodali
     
@@ -60,24 +73,25 @@ if __name__ == "__main__":                                  #ako pokrecemo skrui
 
     dock_wgt = StructureDock("Structure Dock", main_window)
     dock_wgt.tree.clicked.connect(open_file)
-    main_window.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dock_wgt) 
+    main_window.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dock_wgt)
+
+    ###ucitavamo metadata
+    metadata_file = open("metadata.json")
+    metadata = json.load(metadata_file)
+    models = []
+    for data in metadata:
+        models.append(GenerickiModel(data))
 
     central_widget = QtWidgets.QTabWidget(main_window)
-    workspace = WorkspaceWidget(central_widget)
+    workspace = WorkspaceWidget(central_widget, None)
     # workspace.show_tabs()
     central_widget.addTab(workspace, QtGui.QIcon("student.png"), "Naslov")
     central_widget.setTabsClosable(True)
     central_widget.tabCloseRequested.connect(delete_tab)
   
     main_window.setCentralWidget(central_widget)
-
-
-
-
-
-
-
     
     ###kraj
+
     main_window.show()
     sys.exit(app.exec_())

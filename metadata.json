@@ -2,13 +2,11 @@
     {
         "name": "Visokoškolska ustanova",
         "source": "visokoskolske_ustanove.csv",
-        "columns": ["oznaka", "naziv", "adresa"],
         "column_names": ["Oznaka", "Naziv", "Adresa"]
     },
     {
         "name": "Nastavni predmet",
         "source": "nastavni_predmeti.csv",
-        "columns": ["oznaka", "ustanova", "naziv", "ESPB"],
         "column_names": ["Oznaka", "Ustanova", "Naziv", "ESPB"]
     }
 ]

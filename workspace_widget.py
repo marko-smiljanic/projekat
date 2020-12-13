@@ -6,9 +6,10 @@ from polozeni_predmet import PolozeniPredmet
 from nepolozeni_predmet import NepolozeniPredmet
 from polozeni_predmet_model import PolozeniPredmetModel
 from nepolozeni_predmet_model import NepolozeniPredmetModel
+from genericki_model import GenerickiModel
 
 class WorkspaceWidget(QtWidgets.QWidget):               #predstavlja deo u main_window-u, tj. kao neki nas centralni wgt
-    def __init__(self, parent):
+    def __init__(self, parent, model):
         super().__init__(parent)
 
         self.main_layout = QtWidgets.QVBoxLayout()
@@ -18,8 +19,7 @@ class WorkspaceWidget(QtWidgets.QWidget):               #predstavlja deo u main_
         self.tabela1 = QtWidgets.QTableView(self.tab_widget)
         self.tabela1.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.tabela1.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.student_model = self.create_dummy_model()
-        self.tabela1.setModel(self.student_model)
+        self.tabela1.setModel(model)  # main salje odgovarajuci model
 
         self.tabela1.clicked.connect(self.student_selected)         #na klik tabele se emituje odredjena metoda
 
@@ -78,21 +78,7 @@ class WorkspaceWidget(QtWidgets.QWidget):               #predstavlja deo u main_
         ]
         return student_model
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    #def create_model(self, index):
 
 
 
@@ -136,6 +122,8 @@ class WorkspaceWidget(QtWidgets.QWidget):               #predstavlja deo u main_
 
     # def show_text(self, text):
     #     self.main_text.setText(text)
+
+
 
     # def create_table(self, rows, columns):
     #     table_wgt = QtWidgets.QTableWidget(rows, columns, self)

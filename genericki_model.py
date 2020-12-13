@@ -1,50 +1,64 @@
 from PySide2 import QtWidgets, QtGui, QtCore
 
+import csv
+import pathlib
+
+# TODO: napisati metodu save_data() i pozivati je gde je potrebno, jos par modela u metadata + njihovi csv-ovi, s u visokoskolskim ustanovama
+
 class GenerickiModel(QtCore.QAbstractTableModel):
-    def __init__(self, parent=None):
+    def __init__(self, data, parent=None):  # data sadrzi metapodatke o tome kako model izgleda
         super().__init__(parent)
         self.lista_objekata = []
 
+        # self.lista_objekata = [
+        #   ["TF", "Tehnicki Fakultet",         "Novi Sad"],
+        #   ["PO", "Poljoprivredni Fakultet",   "Novi Sad"],
+        #   ...
+        #]
+
+        self.name = data["name"]
+        self.source = data["source"]
+        self.column_names = data["column_names"]           # lista naziva svih kolona (za GUI)
+        self.load_data()
+
     #pomocna metoda
-    def get_element(self, index):           #index ima oznacen red i kolonu, a jedan student je jedan red, index je qmodel index objekat
-        return self.lista_objekata[index.row()]   #vrati iz liste studenata na poziciji koja je jednaka redu indeksa
+    def get_element(self, index):           #index ima oznacen red i kolonu, a jedan objekat je jedan red, index je qmodel index objekat
+        return self.lista_objekata[index.row()]   #vrati iz liste objekata na poziciji koja je jednaka redu indeksa
 
     #moramo da redefinisemo
-    def rowCount(self, index):           #jedan red u tabeli ce biti jedan student
+    def rowCount(self, index):           #jedan red u tabeli ce biti jedan objekat (recnik)
         return len(self.lista_objekata)
 
-    def columnCount(self, index):
-        if self.rowCount(index) > 0:                  #hocemo samo ime i index da prikazujemo
-            return self.lista_objekata[0].get_no_columns() # dummy funkcija
-        else:
-            return 0
+    def columnCount(self, index):                 #hocemo samo ime i index da prikazujemo
+        return len(self.column_names)
 
     def data(self, index, role=QtCore.Qt.DisplayRole):
-        student = self.get_element(index)
-        if(index.column() == 0 and role == QtCore.Qt.DisplayRole):  #displayRole je uloga za prikazivanje
-            return student.broj_indeksa
-        elif(index.column() == 1 and role == QtCore.Qt.DisplayRole):
-            return student.ime_prezime
+        if(role == QtCore.Qt.DisplayRole):  # proveriti indeks kolone?
+            objekat = self.get_element(index)  # proveriti indeks reda?
+            return objekat[index.column()]  # npr. objekat[0] -> dohvatamo Oznaku
         return None
 
-    def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):             #za labele
-        if(section == 0 and orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole):
-            return "Broj indeksa"
-        elif(section == 1 and orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole):
-            return "Ime i prezime"
+    def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):             #za labele 
+        if(orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole):      #TODO: Dodati utf-8
+            return self.column_names[section]
         return None
 
     def setData(self, index, value, role=QtCore.Qt.EditRole):
-        student = self.get_element(index)
-        if(value == ""):
-            return False
-        if(index.column() == 0 and role == QtCore.Qt.EditRole):
-            student.broj_indeksa = value
-            return True
-        elif(index.column() == 1 and role == QtCore.Qt.EditRole):
-            student.ime_prezime = value
+        if(role == QtCore.Qt.EditRole and value != ""):
+            objekat = self.get_element(index)
+            objekat[index.column()] = value         #sacuvace prvu o ubojektu pa tu novu vrednostu setuje toj (izmenjenoj) koloni
+            # self.save_data()
             return True
         return False
 
     def flags(self, index):                                     #zadrzimo sve stare flegove i dodamo novi
-        return super().flags(index) | QtCore.Qt.ItemIsEditable  #| == or nad bitovima, zadrzimo stare flegove i dodamo novi da je editable
+        return super().flags(index) | QtCore.Qt.ItemIsEditable  #| == or nad bitovima, zadrzimo stare flegove i dodamo novi da je editable\
+
+    def load_data(self):
+        input_csv = open("data/" + self.source)
+        csv_reader = csv.reader(input_csv, delimiter=",")
+        for row in csv_reader:
+            self.lista_objekata.append(row)
+        input_csv.close()
+
+    #def save_data(self):
