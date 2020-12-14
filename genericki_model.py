@@ -5,6 +5,7 @@ import pathlib
 
 # TODO: napisati metodu save_data() i pozivati je gde je potrebno, jos par modela u metadata + njihovi csv-ovi, s u visokoskolskim ustanovama
 
+
 class GenerickiModel(QtCore.QAbstractTableModel):
     def __init__(self, data, parent=None):  # data sadrzi metapodatke o tome kako model izgleda
         super().__init__(parent)
@@ -46,8 +47,8 @@ class GenerickiModel(QtCore.QAbstractTableModel):
     def setData(self, index, value, role=QtCore.Qt.EditRole):
         if(role == QtCore.Qt.EditRole and value != ""):
             objekat = self.get_element(index)
-            objekat[index.column()] = value         #sacuvace prvu o ubojektu pa tu novu vrednostu setuje toj (izmenjenoj) koloni
-            # self.save_data()
+            objekat[index.column()] = value         #sacuvace prvu o ubojektu pa tu novu vrednostu setuje toj (izmenjenoj) koloni, sacuvance takodje u self.lista_objekata jer ga gadja po referenci
+            self.save_data()
             return True
         return False
 
@@ -61,4 +62,8 @@ class GenerickiModel(QtCore.QAbstractTableModel):
             self.lista_objekata.append(row)
         input_csv.close()
 
-    #def save_data(self):
+    def save_data(self):
+        input_csv = open("data/" + self.source, 'w', newline='')
+        csv_writer = csv.writer(input_csv, delimiter=",")
+        csv_writer.writerows(self.lista_objekata)
+        input_csv.close()

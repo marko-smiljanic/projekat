@@ -6,6 +6,7 @@ from workspace_widget import WorkspaceWidget
 from genericki_model import GenerickiModel
 import json
 
+
 def delete_tab(index):
     central_widget.removeTab(index)
 
@@ -13,19 +14,19 @@ def open_file(index):
     path = dock_wgt.model.filePath(index)
     with open(path) as f:
         # TODO: proveriti da li postoji otvoren tab za ovaj fajl (da bi podaci bili azurni)
-        #   - proci kroz tabove->workspace->model->source
+        #   - proci kroz tabove->workspace->model->source   #nisam nasao kako da iterisem kroz tabove, tj. kako da vidim koji su sve tabovi tu
         #       - ako postoji tab u kojem model.source == file_name: prebacimo fokus na njega
         #       - u suprotnom: kreiramo novi workspace i tab (kao ispod) i prebacimo fokus na njega
         #text = f.read()
         model = None  # izaberemo odgovarajuci model u zavisnosti od naziva file-a
         file_name = path.split("/")[-1]
-        
-        for m in models:
+        for m in models:                        #kako on ovde dohvati models kada je models definisano skroz dole?
             if m.source == file_name:  
                 model = m
                 break
         new_workspace = WorkspaceWidget(central_widget, model)
         central_widget.addTab(new_workspace, model.name)  #ovde setujemo ime novog taba, tj. splitujemo putanju i uzmemo poslednji element
+        central_widget.setCurrentWidget(new_workspace)    #sa ovim smo promenili fokus na novootvoreni tab
         #new_workspace.show_text(text)
         #print(f.read())
 
@@ -76,7 +77,7 @@ if __name__ == "__main__":                                  #ako pokrecemo skrui
     main_window.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dock_wgt)
 
     ###ucitavamo metadata
-    metadata_file = open("metadata.json")
+    metadata_file = open("metadata.json", encoding='utf-8')  #ENCODING se dodaje u citanju json-a jer nema podeseno po default-u UTF-8
     metadata = json.load(metadata_file)
     models = []
     for data in metadata:
