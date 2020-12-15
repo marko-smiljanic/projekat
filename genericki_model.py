@@ -11,15 +11,11 @@ class GenerickiModel(QtCore.QAbstractTableModel):
         super().__init__(parent)
         self.lista_objekata = []
 
-        # self.lista_objekata = [
-        #   ["TF", "Tehnicki Fakultet",         "Novi Sad"],
-        #   ["PO", "Poljoprivredni Fakultet",   "Novi Sad"],
-        #   ...
-        #]
-
         self.name = data["name"]
         self.source = data["source"]
         self.column_names = data["column_names"]           # lista naziva svih kolona (za GUI)
+        self.children = data["children"]        # niz recnika
+        self.primary_key = data["primary_key"]  # niz indeksa kolona
         self.load_data()
 
     #pomocna metoda

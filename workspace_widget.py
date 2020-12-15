@@ -9,41 +9,61 @@ from nepolozeni_predmet_model import NepolozeniPredmetModel
 from genericki_model import GenerickiModel
 
 class WorkspaceWidget(QtWidgets.QWidget):               #predstavlja deo u main_window-u, tj. kao neki nas centralni wgt
-    def __init__(self, parent, model):
+    def __init__(self, parent, model, models):
         super().__init__(parent)
 
         self.main_layout = QtWidgets.QVBoxLayout()
         self.tab_widget = None
         self.create_tab_widget()
         ##########################
-        self.tabela1 = QtWidgets.QTableView(self.tab_widget)
-        self.tabela1.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
-        self.tabela1.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.tabela1.setModel(model)  # main salje odgovarajuci model
+        self.tabela = QtWidgets.QTableView(self.tab_widget)
+        self.tabela.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.tabela.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tabela.setModel(model)  # main salje odgovarajuci model
+        self.models = models        # pamtimo sve postojece modele
 
-        self.tabela1.clicked.connect(self.student_selected)         #na klik tabele se emituje odredjena metoda
+        self.tabela.clicked.connect(self.row_selected)         #na klik tabele se emituje odredjena metoda
 
-        self.podtabela1 = QtWidgets.QTableView(self.tab_widget)
-        self.podtabela2 = QtWidgets.QTableView(self.tab_widget)
+        #self.podtabela1 = QtWidgets.QTableView(self.tab_widget)
+        #self.podtabela2 = QtWidgets.QTableView(self.tab_widget)
 
-        self.main_layout.addWidget(self.tabela1)
+        self.main_layout.addWidget(self.tabela)
         self.main_layout.addWidget(self.tab_widget)
         self.setLayout(self.main_layout)
 
-    def student_selected(self, index):                          #kada se klikne na studenta u tabeli
-        model = self.tabela1.model()
-        selektovani_student = model.get_element(index)
+    def row_selected(self, index):                          #kada se klikne na red u tabeli
+        model = self.tabela.model()                         #model glavne tabele (u kojoj smo nesto kliknuli)
+        selektovani_red = model.get_element(index)
+        for child in model.children:
+            for m in self.models:
+                if child["name"] == m.name:
 
-        model_polozeni = PolozeniPredmetModel()                 #ovde treba da isntanciram polozeni predmeti model i nepolozeni predmeti model i setujem im podatke, tj. setujem im iz studenta odgovarajucu listu
-        model_polozeni.polozeni_predmeti = selektovani_student.polozeni_predmeti        #onda posle podtabeli1 i podtabeli2 setujem model na ove modele koje sam instancirao i dodelio im odgovarajucu listu
-        self.podtabela1.setModel(model_polozeni)
+                    # napravimo medju-model (proxy) koji filtrira samo one redove koji zadovoljavaju neki uslov
+                    # npr. podtabela "Nastavni predmeti" ispod tabele "Visokoskolska ustanova", prikazuje samo predmete iz selektovane ustanove
+                    filter_proxy_model = QtCore.QSortFilterProxyModel()
+                    filter_proxy_model.setSourceModel(m) # "child" model
+                    filter_proxy_model.setFilterKeyColumn(child["column"])
+                    filter_proxy_model.setFilterRegularExpression(selektovani_red[0])
+                    
+                    # filtriranje
+                    
+                    # postavljamo model koji sadrzi podskup redova iz generickog modela
+                    podtabela = QtWidgets.QTableView(self.tab_widget)
+                    podtabela.setModel(filter_proxy_model)
+                    self.tab_widget.addTab(podtabela, QtGui.QIcon("icons8-edit-file-64"), m.name)
+                    
+                    break # predjemo na naredni child
 
-        model_nepolozeni = NepolozeniPredmetModel()
-        model_nepolozeni.nepolozeni_predmeti = selektovani_student.nepolozeni_predmeti
-        self.podtabela2.setModel(model_nepolozeni)
+        # model_polozeni = PolozeniPredmetModel()                 #ovde treba da isntanciram polozeni predmeti model i nepolozeni predmeti model i setujem im podatke, tj. setujem im iz studenta odgovarajucu listu
+        # model_polozeni.polozeni_predmeti = selektovani_student.polozeni_predmeti        #onda posle podtabeli1 i podtabeli2 setujem model na ove modele koje sam instancirao i dodelio im odgovarajucu listu
+        # self.podtabela1.setModel(model_polozeni)
 
-        self.tab_widget.addTab(self.podtabela1, QtGui.QIcon("icons8-edit-file-64"), "Prva podtabela")       #na kraju dodam da se nove tabele prikazu u novim tabovima
-        self.tab_widget.addTab(self.podtabela2, QtGui.QIcon("icons8-edit-file-64"), "Druga podtabela")
+        # model_nepolozeni = NepolozeniPredmetModel()
+        # model_nepolozeni.nepolozeni_predmeti = selektovani_student.nepolozeni_predmeti
+        # self.podtabela2.setModel(model_nepolozeni)
+
+        # self.tab_widget.addTab(self.podtabela1, QtGui.QIcon("icons8-edit-file-64"), "Prva podtabela")       #na kraju dodam da se nove tabele prikazu u novim tabovima
+        # self.tab_widget.addTab(self.podtabela2, QtGui.QIcon("icons8-edit-file-64"), "Druga podtabela")
 
     def create_tab_widget(self):
         self.tab_widget = QtWidgets.QTabWidget(self)
@@ -52,31 +72,7 @@ class WorkspaceWidget(QtWidgets.QWidget):               #predstavlja deo u main_
 
     def delete_tab(self, index):
         self.tab_widget.removeTab(index)
-
-    def create_dummy_model(self):
-        student_model = StudentModel()
-        student_model.students = [
-            Student("2019000000", "Marko Markovic", 
-                [PolozeniPredmet("OOP1", "", 6), PolozeniPredmet("SIMS", "", 7)], 
-                [NepolozeniPredmet("BP", "", 3), NepolozeniPredmet("AR", "", 2)]),
-            
-            Student("2019011111", "Petar Petrovic", 
-                [PolozeniPredmet("OOP2", "", 8), PolozeniPredmet("OP", "", 8)],
-                [NepolozeniPredmet("BP", "", 1), NepolozeniPredmet("AR", "", 1)]),
-            
-            Student("2019777777", "Janko Jankovic", 
-                [PolozeniPredmet("OOP2", "", 9), PolozeniPredmet("OP", "", 10)],
-                [NepolozeniPredmet("Matematika", "", 2), NepolozeniPredmet("Diskretna Matematika", "", 1)]),
-            
-            Student("2019555555", "Stefan Stefanovic", 
-                [PolozeniPredmet("Engleski jezik 11", "", 6), PolozeniPredmet("OP", "", 6)],
-                [NepolozeniPredmet("BP", "", 4), NepolozeniPredmet("OOP1", "", 2)]),
-            
-            Student("2019222222", "Ivan Ivanovic", 
-                [PolozeniPredmet("Web dizajn", "", 7), PolozeniPredmet("OP", "", 8)],
-                [NepolozeniPredmet("Matematika", "", 2), NepolozeniPredmet("AR", "", 1)])
-        ]
-        return student_model
+        #TODO: obezbediti da za svaki model postoji samo jedan otvoreni tab (da se ne duplira prilikom otvaranja)
 
     #def create_model(self, index):
 

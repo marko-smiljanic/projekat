@@ -1,12 +1,33 @@
 [
     {
-        "name": "Visokoškolska ustanova",
+        "name": "Visokoškolske ustanove",
         "source": "visokoskolske_ustanove.csv",
-        "column_names": ["Oznaka", "Naziv", "Adresa"]
+        "column_names": ["Oznaka", "Naziv", "Adresa"],
+        "primary_key": [0],
+        "children": [
+            {
+                "name": "Nastavni predmeti",
+                "column": 0
+            },
+            {
+                "name": "Studenti",
+                "column": 0
+            }
+        ]
     },
     {
-        "name": "Nastavni predmet",
+        "name": "Nastavni predmeti",
         "source": "nastavni_predmeti.csv",
-        "column_names": ["Oznaka", "Ustanova", "Naziv", "ESPB"]
+        "column_names": ["Ustanova", "Oznaka", "Naziv", "ESPB"],
+        "primary_key": [0, 1],
+        "children": []
+    },
+    {
+        "name": "Studenti",
+        "source": "studenti.csv",
+        "column_names": ["Ustanova", "Struka", "Broj indeksa", "Prezime", "Ime roditelja", "Ime", "Pol", "Adresa stanovanja", "Telefon", "JMBG", "Datum rodjenja"],
+        "primary_key": [0, 1, 2],
+        "children": []
+
     }
 ]

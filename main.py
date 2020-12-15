@@ -21,14 +21,16 @@ def open_file(index):
         model = None  # izaberemo odgovarajuci model u zavisnosti od naziva file-a
         file_name = path.split("/")[-1]
         for m in models:                        #kako on ovde dohvati models kada je models definisano skroz dole?
-            if m.source == file_name:  
+            if m.source == file_name:
                 model = m
                 break
-        new_workspace = WorkspaceWidget(central_widget, model)
-        central_widget.addTab(new_workspace, model.name)  #ovde setujemo ime novog taba, tj. splitujemo putanju i uzmemo poslednji element
-        central_widget.setCurrentWidget(new_workspace)    #sa ovim smo promenili fokus na novootvoreni tab
+        if(model is not None):
+            new_workspace = WorkspaceWidget(central_widget, model, models)
+            central_widget.addTab(new_workspace, model.name)  #ovde setujemo ime novog taba, tj. splitujemo putanju i uzmemo poslednji element
+            central_widget.setCurrentWidget(new_workspace)    #sa ovim smo promenili fokus na novootvoreni tab
         #new_workspace.show_text(text)
         #print(f.read())
+
 
 
 if __name__ == "__main__":                                  #ako pokrecemo skruiptu izvrsice se telo, ako je importujemo nece je pokrenuti!!!
@@ -84,7 +86,7 @@ if __name__ == "__main__":                                  #ako pokrecemo skrui
         models.append(GenerickiModel(data))
 
     central_widget = QtWidgets.QTabWidget(main_window)
-    workspace = WorkspaceWidget(central_widget, None)
+    workspace = WorkspaceWidget(central_widget, None, models)
     # workspace.show_tabs()
     central_widget.addTab(workspace, QtGui.QIcon("student.png"), "Naslov")
     central_widget.setTabsClosable(True)
