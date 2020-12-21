@@ -80,7 +80,7 @@ if __name__ == "__main__":                                  #ako pokrecemo skrui
 
     ###ucitavamo metadata
     metadata_file = open("metadata.json", encoding='utf-8')  #ENCODING se dodaje u citanju json-a jer nema podeseno po default-u UTF-8
-    metadata = json.load(metadata_file)
+    metadata = json.load(metadata_file)                         #TODO: kako bi naveo putanju da metadata nije u src folderu?
     models = []
     for data in metadata:
         models.append(GenerickiModel(data))

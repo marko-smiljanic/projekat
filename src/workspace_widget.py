@@ -1,15 +1,9 @@
 from PySide2 import QtWidgets, QtGui, QtCore
 
-from student import Student
-from student_model import StudentModel
-from polozeni_predmet import PolozeniPredmet
-from nepolozeni_predmet import NepolozeniPredmet
-from polozeni_predmet_model import PolozeniPredmetModel
-from nepolozeni_predmet_model import NepolozeniPredmetModel
 from genericki_model import GenerickiModel
 
 class WorkspaceWidget(QtWidgets.QWidget):               #predstavlja deo u main_window-u, tj. kao neki nas centralni wgt
-    def __init__(self, parent, model, models):
+    def __init__(self, parent, model, models):          #cemu sluzi model?
         super().__init__(parent)
 
         self.main_layout = QtWidgets.QVBoxLayout()
@@ -32,19 +26,25 @@ class WorkspaceWidget(QtWidgets.QWidget):               #predstavlja deo u main_
         self.setLayout(self.main_layout)
 
     def row_selected(self, index):                          #kada se klikne na red u tabeli
-        model = self.tabela.model()                         #model glavne tabele (u kojoj smo nesto kliknuli)
+        model = self.tabela.model()                         #model glavne tabele (u kojoj smo nesto kliknuli), genericki model, koji smo joj prosledili
         selektovani_red = model.get_element(index)
-        for child in model.children:
-            for m in self.models:
+        for child in model.children:                        #model iz generickog modela, iz json fajla
+            for m in self.models:                           #ovaj miz models ima ucitano iz csv-a
                 if child["name"] == m.name:
+
+                    parent = None
+                    for p in m.parents:
+                        if p["name"] == model.name:
+                            parent = p
+                            break
 
                     # napravimo medju-model (proxy) koji filtrira samo one redove koji zadovoljavaju neki uslov
                     # npr. podtabela "Nastavni predmeti" ispod tabele "Visokoskolska ustanova", prikazuje samo predmete iz selektovane ustanove
                     filter_proxy_model = QtCore.QSortFilterProxyModel()
-                    filter_proxy_model.setSourceModel(m) # "child" model
-                    filter_proxy_model.setFilterKeyColumn(child["column"])
-                    filter_proxy_model.setFilterRegularExpression(selektovani_red[0])
-                    
+                    filter_proxy_model.setSourceModel(m) # "child" model, iz kog modela vuce podatke, povezan je sa glavnim (generickim) modelom
+                    filter_proxy_model.setFilterKeyColumn(child["column"]) # u kojem modelu se nalazi oznaka "parent" modela
+                    filter_proxy_model.setFilterRegularExpression(selektovani_red[parent["column"]]) # u kojoj koloni u "parent" modelu se nalazi ta oznaka
+                    #proverava da li je oznaka ustanove (iz ustanove) jednaka ustanovi (iz nastavnog predmeta)
                     # filtriranje
                     
                     # postavljamo model koji sadrzi podskup redova iz generickog modela
@@ -53,17 +53,6 @@ class WorkspaceWidget(QtWidgets.QWidget):               #predstavlja deo u main_
                     self.tab_widget.addTab(podtabela, QtGui.QIcon("icons8-edit-file-64"), m.name)
                     
                     break # predjemo na naredni child
-
-        # model_polozeni = PolozeniPredmetModel()                 #ovde treba da isntanciram polozeni predmeti model i nepolozeni predmeti model i setujem im podatke, tj. setujem im iz studenta odgovarajucu listu
-        # model_polozeni.polozeni_predmeti = selektovani_student.polozeni_predmeti        #onda posle podtabeli1 i podtabeli2 setujem model na ove modele koje sam instancirao i dodelio im odgovarajucu listu
-        # self.podtabela1.setModel(model_polozeni)
-
-        # model_nepolozeni = NepolozeniPredmetModel()
-        # model_nepolozeni.nepolozeni_predmeti = selektovani_student.nepolozeni_predmeti
-        # self.podtabela2.setModel(model_nepolozeni)
-
-        # self.tab_widget.addTab(self.podtabela1, QtGui.QIcon("icons8-edit-file-64"), "Prva podtabela")       #na kraju dodam da se nove tabele prikazu u novim tabovima
-        # self.tab_widget.addTab(self.podtabela2, QtGui.QIcon("icons8-edit-file-64"), "Druga podtabela")
 
     def create_tab_widget(self):
         self.tab_widget = QtWidgets.QTabWidget(self)
@@ -119,7 +108,20 @@ class WorkspaceWidget(QtWidgets.QWidget):               #predstavlja deo u main_
     # def show_text(self, text):
     #     self.main_text.setText(text)
 
+    # def student_selected(self, index):                          #kada se klikne na studenta u tabeli
+    #     model = self.tabela1.model()
+    #     selektovani_student = model.get_element(index)
 
+    #     model_polozeni = PolozeniPredmetModel()                 #ovde treba da isntanciram polozeni predmeti model i nepolozeni predmeti model i setujem im podatke, tj. setujem im iz studenta odgovarajucu listu
+    #     model_polozeni.polozeni_predmeti = selektovani_student.polozeni_predmeti        #onda posle podtabeli1 i podtabeli2 setujem model na ove modele koje sam instancirao i dodelio im odgovarajucu listu
+    #     self.podtabela1.setModel(model_polozeni)
+
+    #     model_nepolozeni = NepolozeniPredmetModel()
+    #     model_nepolozeni.nepolozeni_predmeti = selektovani_student.nepolozeni_predmeti
+    #     self.podtabela2.setModel(model_nepolozeni)
+
+    #     self.tab_widget.addTab(self.podtabela1, QtGui.QIcon("icons8-edit-file-64"), "Prva podtabela")       #na kraju dodam da se nove tabele prikazu u novim tabovima
+    #     self.tab_widget.addTab(self.podtabela2, QtGui.QIcon("icons8-edit-file-64"), "Druga podtabela")
 
     # def create_table(self, rows, columns):
     #     table_wgt = QtWidgets.QTableWidget(rows, columns, self)

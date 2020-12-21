@@ -3,8 +3,6 @@ from PySide2 import QtWidgets, QtGui, QtCore
 import csv
 import pathlib
 
-# TODO: napisati metodu save_data() i pozivati je gde je potrebno, jos par modela u metadata + njihovi csv-ovi, s u visokoskolskim ustanovama
-
 
 class GenerickiModel(QtCore.QAbstractTableModel):
     def __init__(self, data, parent=None):  # data sadrzi metapodatke o tome kako model izgleda
@@ -15,7 +13,7 @@ class GenerickiModel(QtCore.QAbstractTableModel):
         self.source = data["source"]
         self.column_names = data["column_names"]           # lista naziva svih kolona (za GUI)
         self.children = data["children"]        # niz recnika
-        self.primary_key = data["primary_key"]  # niz indeksa kolona
+        self.parents = data["parents"]
         self.load_data()
 
     #pomocna metoda
@@ -36,7 +34,7 @@ class GenerickiModel(QtCore.QAbstractTableModel):
         return None
 
     def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):             #za labele 
-        if(orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole):      #TODO: Dodati utf-8
+        if(orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole):      
             return self.column_names[section]
         return None
 
@@ -52,14 +50,14 @@ class GenerickiModel(QtCore.QAbstractTableModel):
         return super().flags(index) | QtCore.Qt.ItemIsEditable  #| == or nad bitovima, zadrzimo stare flegove i dodamo novi da je editable\
 
     def load_data(self):
-        input_csv = open("data/" + self.source)
+        input_csv = open("../data/" + self.source)
         csv_reader = csv.reader(input_csv, delimiter=",")
         for row in csv_reader:
             self.lista_objekata.append(row)
         input_csv.close()
 
     def save_data(self):
-        input_csv = open("data/" + self.source, 'w', newline='')
+        input_csv = open("../data/" + self.source, 'w', newline='')
         csv_writer = csv.writer(input_csv, delimiter=",")
         csv_writer.writerows(self.lista_objekata)
         input_csv.close()
