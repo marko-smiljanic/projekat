@@ -12,7 +12,7 @@ class GenerickiModel(QtCore.QAbstractTableModel):
         self.name = data["name"]
         self.source = data["source"]
         self.column_names = data["column_names"]           # lista naziva svih kolona (za GUI)
-        self.children = data["children"]        # niz recnika
+        self.primary_key = data["primary_key"]
         self.parents = data["parents"]
         self.load_data()
 
@@ -61,3 +61,4 @@ class GenerickiModel(QtCore.QAbstractTableModel):
         csv_writer = csv.writer(input_csv, delimiter=",")
         csv_writer.writerows(self.lista_objekata)
         input_csv.close()
+

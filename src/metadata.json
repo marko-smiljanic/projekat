@@ -3,125 +3,96 @@
         "name": "Visokoškolske ustanove",
         "source": "visokoskolske_ustanove.csv",
         "column_names": ["Oznaka", "Naziv", "Adresa"],
-        "children": [
-            {
-                "name": "Nastavni predmeti",
-                "column": 0
-            },
-            {
-                "name": "Studenti",
-                "column": 0
-            },
-            {
-                "name": "Studijski programi",
-                "column": 0
-            }
-        ],
-        "parents": []
+        "primary_key": [0],
+        "parents": [],
+        "not_required": []
     },
     {
         "name": "Nastavni predmeti",
         "source": "nastavni_predmeti.csv",
         "column_names": ["Ustanova", "Oznaka", "Naziv", "ESPB"],
-        "children": [
-            {
-                "name":"Planovi studijskih grupa",
-                "column": 5
-            }
-        ],
+        "primary_key": [0, 1],
         "parents": [
             {
                 "name": "Visokoškolske ustanove",
-                "column": 0
+                "columns": [0]
             }
-        ]
+        ],
+        "not_required": []
     },
     {
         "name": "Studenti",
         "source": "studenti.csv",
         "column_names": ["Ustanova", "Struka", "Broj indeksa", "Prezime", "Ime roditelja", "Ime", "Pol", "Adresa stanovanja", "Telefon", "JMBG", "Datum rodjenja"],
-        "children": [
-            {
-                "name":"Tokovi studija",
-                "column": 4
-            }
-        ],
+        "primary_key": [0, 1, 2],
         "parents": [
             {
                 "name": "Visokoškolske ustanove",
-                "column": 0
+                "columns": [0]
             }
-        ]
+        ],
+        "not_required": [4, 7, 8, 9, 10]
     },
     {
         "name": "Nivoi studija",
         "source": "nivoi_studija.csv",
         "column_names": ["Oznaka", "Naziv"],
-        "children": [
-            {
-                "name":"Studijski programi",
-                "column": 1
-            }
-        ],
-        "parents": []
+        "primary_key": [0],
+        "parents": [],
+        "not_required": []
     },
     {
         "name": "Studijski programi",
         "source": "studijski_programi.csv",
         "column_names": ["Ustanova", "Nivo", "Oznaka programa", "Naziv programa"],
-        "children": [
-            {
-                "name":"Planovi studijskih grupa",
-                "column": 1
-            },
-            {
-                "name": "Tokovi studija",
-                "column": 1
-            }
-        ],
+        "primary_key": [0, 2],
         "parents": [
             {
                 "name": "Visokoškolske ustanove",
-                "column": 0
+                "columns": [0]
             },
             {
                 "name":"Nivoi studija",
-                "column": 0
+                "columns": [1]
             }
-        ]
+        ],
+        "not_required": []
     },
     {
         "name": "Planovi studijskih grupa",
         "source": "planovi_studijskih_grupa.csv",
         "column_names": ["Program ustanove", "Oznaka programa", "Blok", "Pozicija", "Ustanova predmet", "Oznaka predmeta"],
-        "children": [],
+        "primary_key": [0, 1, 2, 3],
         "parents": [
             {
                 "name": "Studijski programi",
-                "column": 2
+                "columns": [0, 1]
             },
             {
                 "name":"Nastavni predmeti",
-                "column": 1
+                "columns": [4, 5]
             }
-        ]
+        ],
+        "not_required": []
     },
     {
         "name": "Tokovi studija",
         "source": "tokovi_studija.csv",
         "column_names": ["Ustanova", "Oznaka programa", "Student iz ustanove", "Struka", "Broj indeksa", "Školska godina", "Godina studija", "Blok", "Redni broj upsia", "Datum upisa", "Datum overe", "ESPB pocetni", "ESPB krajnji"],
-        "children": [],
+        "primary_key": [0, 1, 2, 3, 4, 5, 6, 7, 8],
         "parents": [
             {
                 "name": "Studijski programi",
-                "column": 2
+                "columns": [0, 1]
             },
             {
                 "name":"Studenti",
-                "column": 2
+                "columns": [2, 3, 4]
             }
-        ]
+        ],
+        "not_required": [10]
     }
+
 
 
 
