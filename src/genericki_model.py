@@ -14,7 +14,9 @@ class GenerickiModel(QtCore.QAbstractTableModel):
         self.column_names = data["column_names"]           #lista naziva svih kolona (za GUI)
         self.primary_key = data["primary_key"]
         self.parents = data["parents"]
+        self.not_required = data["not_required"]
         self.load_data()
+
 
     #pomocna metoda
     def get_element(self, index):                   #index ima oznacen red i kolonu, a jedan objekat je jedan red, index je qmodel index objekat
@@ -56,9 +58,17 @@ class GenerickiModel(QtCore.QAbstractTableModel):
             self.lista_objekata.append(row)
         input_csv.close()
 
+    def add_data(self, data):
+        self.lista_objekata.append(data)
+        self.save_data() # sacuvamo novi red u .csv fajl
+
+
     def save_data(self):
         input_csv = open("../data/" + self.source, 'w', newline='')
         csv_writer = csv.writer(input_csv, delimiter=",")
         csv_writer.writerows(self.lista_objekata)
         input_csv.close()
 
+    def delete_data(self, index):
+        self.lista_objekata.remove(self.get_element(index))
+        self.save_data()

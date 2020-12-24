@@ -4,7 +4,7 @@ from genericki_model import GenerickiModel
 from input_forma import InputForma
 
 class WorkspaceWidget(QtWidgets.QWidget):               #predstavlja deo u main_window-u, tj. kao neki nas centralni wgt
-    def __init__(self, parent, model, models):          #cemu sluzi model?
+    def __init__(self, parent, model, models):          #svaki widget radi sa jednim modelom
         super().__init__(parent)
 
         self.main_layout = QtWidgets.QVBoxLayout()
@@ -16,14 +16,18 @@ class WorkspaceWidget(QtWidgets.QWidget):               #predstavlja deo u main_
         self.tabela.setModel(model)                                                     # main salje odgovarajuci model
         self.models = models                                                            # pamtimo sve postojece modele
         self.button = QtWidgets.QPushButton("Dodajte u glavnu tabelu", self.tabela)
+        self.button2 = QtWidgets.QPushButton("Uklonite iz glavne tabele", self.tabela)
+        self.class_index = None
 
-        self.forma = InputForma(self, model)
+
+        self.forma = InputForma(self, model, self.models)
         self.button.clicked.connect(self.button_clicked)
-
+        self.button2.clicked.connect(self.button2_clicked)
         self.tabela.clicked.connect(self.row_selected)         #na klik tabele se emituje odredjena metoda, treba postaviti i za ostale tabele
 
         self.main_layout.addWidget(self.tabela)
         self.main_layout.addWidget(self.button)
+        self.main_layout.addWidget(self.button2)
         self.main_layout.addWidget(self.tab_widget)
 
         self.setLayout(self.main_layout)
@@ -31,8 +35,9 @@ class WorkspaceWidget(QtWidgets.QWidget):               #predstavlja deo u main_
     def row_selected(self, index):                          #kada se klikne na red u tabeli
         model = self.tabela.model()                         #model glavne tabele (u kojoj smo nesto kliknuli), genericki model, koji smo joj prosledili
         selektovani_red = model.get_element(index)
-        for child in self.models:           # prodjemo kroz sve modele
-            for parent in child.parents:    # i medju njihovim parent-ima (ako ih ima)
+        self.class_index = index
+        for child in self.models:                   #prodjemo kroz sve modele
+            for parent in child.parents:            #i medju njihovim parent-ima, ako ih ima
                 if parent["name"] == model.name:         # nadjemo sebe (tako znamo da nam je child)
                     
                     podtabela_model = child
@@ -62,8 +67,13 @@ class WorkspaceWidget(QtWidgets.QWidget):               #predstavlja deo u main_
 
     def button_clicked(self):
         self.forma.show()
+        #self.forma.exec_():
 
-
+    def button2_clicked(self):
+        model = self.tabela.model() 
+        model.delete_data(self.class_index)
+        
+    #TODO: nisam odradio refresh kada se obrise ili doda red
 
 
 

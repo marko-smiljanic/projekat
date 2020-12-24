@@ -10,7 +10,7 @@ import json
 def delete_tab(index):
     central_widget.removeTab(index)
 
-def open_file(index):
+def open_file(index):                           #na klik kreiramo nas widget kome dodelimo model
     path = dock_wgt.model.filePath(index)
     with open(path) as f:
         #TODO: proveriti da li postoji otvoren tab za ovaj fajl, da ne otvara vise puta jedan isti fajl, nego samo prebaci fokus
