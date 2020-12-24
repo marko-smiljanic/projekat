@@ -1,0 +1,100 @@
+[
+    {
+        "name": "Visokoškolske ustanove",
+        "source": "visokoskolske_ustanove.csv",
+        "column_names": ["Oznaka", "Naziv", "Adresa"],
+        "primary_key": [0],
+        "parents": [],
+        "not_required": []
+    },
+    {
+        "name": "Nastavni predmeti",
+        "source": "nastavni_predmeti.csv",
+        "column_names": ["Ustanova", "Oznaka", "Naziv", "ESPB"],
+        "primary_key": [0, 1],
+        "parents": [
+            {
+                "name": "Visokoškolske ustanove",
+                "columns": [0]
+            }
+        ],
+        "not_required": []
+    },
+    {
+        "name": "Studenti",
+        "source": "studenti.csv",
+        "column_names": ["Ustanova", "Struka", "Broj indeksa", "Prezime", "Ime roditelja", "Ime", "Pol", "Adresa stanovanja", "Telefon", "JMBG", "Datum rodjenja"],
+        "primary_key": [0, 1, 2],
+        "parents": [
+            {
+                "name": "Visokoškolske ustanove",
+                "columns": [0]
+            }
+        ],
+        "not_required": [4, 7, 8, 9, 10]
+    },
+    {
+        "name": "Nivoi studija",
+        "source": "nivoi_studija.csv",
+        "column_names": ["Oznaka", "Naziv"],
+        "primary_key": [0],
+        "parents": [],
+        "not_required": []
+    },
+    {
+        "name": "Studijski programi",
+        "source": "studijski_programi.csv",
+        "column_names": ["Ustanova", "Nivo", "Oznaka programa", "Naziv programa"],
+        "primary_key": [0, 2],
+        "parents": [
+            {
+                "name": "Visokoškolske ustanove",
+                "columns": [0]
+            },
+            {
+                "name":"Nivoi studija",
+                "columns": [1]
+            }
+        ],
+        "not_required": []
+    },
+    {
+        "name": "Planovi studijskih grupa",
+        "source": "planovi_studijskih_grupa.csv",
+        "column_names": ["Program ustanove", "Oznaka programa", "Blok", "Pozicija", "Ustanova predmet", "Oznaka predmeta"],
+        "primary_key": [0, 1, 2, 3],
+        "parents": [
+            {
+                "name": "Studijski programi",
+                "columns": [0, 1]
+            },
+            {
+                "name":"Nastavni predmeti",
+                "columns": [4, 5]
+            }
+        ],
+        "not_required": []
+    },
+    {
+        "name": "Tokovi studija",
+        "source": "tokovi_studija.csv",
+        "column_names": ["Ustanova", "Oznaka programa", "Student iz ustanove", "Struka", "Broj indeksa", "Školska godina", "Godina studija", "Blok", "Redni broj upsia", "Datum upisa", "Datum overe", "ESPB pocetni", "ESPB krajnji"],
+        "primary_key": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+        "parents": [
+            {
+                "name": "Studijski programi",
+                "columns": [0, 1]
+            },
+            {
+                "name":"Studenti",
+                "columns": [2, 3, 4]
+            }
+        ],
+        "not_required": [10]
+    }
+
+
+
+
+
+]
