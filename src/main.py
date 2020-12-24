@@ -48,8 +48,9 @@ if __name__ == "__main__":                                  #ako pokrecemo skrui
     menu_veiw = QtWidgets.QMenu("View", menu_bar)
     menu_veiw.addAction("Not implemented")
     menu_help = QtWidgets.QMenu("Help", menu_bar)
-    menu_help.addAction("Editovanje postojecih elemenata: dvoklik na red u tabeli")
-    menu_help.addAction("Dodavanje novih elemenata: klik na dugme 'Dodajte u glavnu tabelu'")
+    menu_help.addAction("Editovanje: dvoklik na red u tabeli")
+    menu_help.addAction("Dodavanje: klik na dugme 'Dodajte u glavnu tabelu'")
+    menu_help.addAction("Brisanje: klik na dugme 'Uklonite iz glavne tabele'")
     menu_bar.addMenu(menu_file)
     menu_bar.addMenu(menu_edit)                                      #parent mu je menu_bar jer se nalazi u njemu !!
     menu_bar.addMenu(menu_veiw)                                      #parent moze da se doda ali i ne mora, za ove jednostavne primere bar
