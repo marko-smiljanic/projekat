@@ -13,14 +13,10 @@ def delete_tab(index):
 def open_file(index):
     path = dock_wgt.model.filePath(index)
     with open(path) as f:
-        # TODO: proveriti da li postoji otvoren tab za ovaj fajl, da ne otvara vise puta jedan isti fajl, nego samo prebaci fokus
-        #   - proci kroz tabove->workspace->model->source   #nisam nasao kako da iterisem kroz tabove, tj. kako da vidim koji su sve tabovi tu
-        #       - ako postoji tab u kojem model.source == file_name: prebacimo fokus na njega
-        #       - u suprotnom: kreiramo novi workspace i tab (kao ispod) i prebacimo fokus na njega
-        #text = f.read()
-        model = None  # izaberemo odgovarajuci model u zavisnosti od naziva file-a
+        #TODO: proveriti da li postoji otvoren tab za ovaj fajl, da ne otvara vise puta jedan isti fajl, nego samo prebaci fokus
+        model = None  #izaberemo odgovarajuci model u zavisnosti od naziva file-a
         file_name = path.split("/")[-1]
-        for m in models:                        #kako on ovde dohvati models kada je models definisano skroz dole?
+        for m in models:
             if m.source == file_name:
                 model = m
                 break
@@ -45,35 +41,29 @@ if __name__ == "__main__":                                  #ako pokrecemo skrui
     
     menu_bar = QtWidgets.QMenuBar(main_window)              #kao parent mora da se prosledi main_window!!!
     
-    #TODO: not implemented
-    menu_file = QtWidgets.QMenu("File")                     #mogu da pravim posebne objekte tipa Menu, ili samo nad menu bar da pozovem ad menu i u parametru napravim novi meni
+    menu_file = QtWidgets.QMenu("File", menu_bar)           #mogu da pravim posebne objekte tipa Menu, ili samo nad menu bar da pozovem ad menu i u parametru napravim novi meni
+    menu_file.addAction("Not implemented") 
+    menu_edit = QtWidgets.QMenu("Edit", menu_bar)
+    menu_edit.addAction("Not implemented")
+    menu_veiw = QtWidgets.QMenu("View", menu_bar)
+    menu_veiw.addAction("Not implemented")
+    menu_help = QtWidgets.QMenu("Help", menu_bar)
+    menu_help.addAction("Editovanje postojecih elemenata: dvoklik na red u tabeli")
+    menu_help.addAction("Dodavanje novih elemenata: klik na dugme 'Dodajte u glavnu tabelu'")
     menu_bar.addMenu(menu_file)
-    menu_bar.addMenu(QtWidgets.QMenu("Edit", menu_bar))     #parent mu je menu_bar jer se nalazi u njemu !!
-    menu_bar.addMenu(QtWidgets.QMenu("View", menu_bar))     #parent moze da se doda ali i ne mora, za ove jednostavne primere bar
-    menu_bar.addMenu(QtWidgets.QMenu("Help", menu_bar))
-    main_window.setMenuBar(menu_bar)                        #uglavnom sve sto se dodaje moramo dodati u main window, tj da mu setujemo sta smo dodali
+    menu_bar.addMenu(menu_edit)                                      #parent mu je menu_bar jer se nalazi u njemu !!
+    menu_bar.addMenu(menu_veiw)                                      #parent moze da se doda ali i ne mora, za ove jednostavne primere bar
+    menu_bar.addMenu(menu_help)
+    main_window.setMenuBar(menu_bar)                                #uglavnom sve sto se dodaje moramo dodati u main window, tj da mu setujemo sta smo dodali
     
     tool_bar = QtWidgets.QToolBar("Tool bar dodat.", main_window)   #klasika...napravimo tool bar i setujemo ga u main_window
     main_window.addToolBar(tool_bar)
 
-    # text_editor_wgt = QtWidgets.QTextEdit("Unesite tekst", main_window)
-    # main_window.setCentralWidget(text_editor_wgt)
-
-    status_bar = QtWidgets.QStatusBar(main_window)
-    status_bar.showMessage("Status bar prikazan.")
-    main_window.setStatusBar(status_bar)
-    
-    # dock_wgt = QtWidgets.QDockWidget("Dock!!!", main_window)
-    # main_window.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dock_wgt)   #mora se importovati QtCOre!!!
-    
-    # obican_wgt = QtWidgets.QWidget(main_window)                         #napravimo obican (genericki) widget, setujemo layout i na kraju ga postavimo za centralni
-    # layout = QtWidgets.QVBoxLayout()                                    #u konstruktru se odredjuje jel horizontalan ili vertikalan, u ovom slucaju H-horizontalan ili V-vertikalan
-    # text_edit_wgt1 = QtWidgets.QTextEdit("Unesite tekst", main_window)
-    # text_edit_wgt2 = QtWidgets.QTextEdit("Unesite tekst", main_window)
-    # layout.addWidget(text_edit_wgt1)
-    # layout.addWidget(text_edit_wgt2)
-    # obican_wgt.setLayout(layout)                                        #obican widget, jer nije nam bitno koji je u ovom slucaju jer svaki moze da ima layout
-    # main_window.setCentralWidget(obican_wgt)
+   
+    # status_bar = QtWidgets.QStatusBar(main_window)
+    # status_bar.showMessage("Status bar prikazan.")
+    # main_window.setStatusBar(status_bar)
+   
 
     dock_wgt = StructureDock("Structure Dock", main_window)
     dock_wgt.tree.clicked.connect(open_file)
@@ -87,10 +77,10 @@ if __name__ == "__main__":                                  #ako pokrecemo skrui
         models.append(GenerickiModel(data))
 
     central_widget = QtWidgets.QTabWidget(main_window)
-    # workspace = WorkspaceWidget(central_widget, None, models)
-    # workspace.show_tabs()
+    #workspace = WorkspaceWidget(central_widget, None, models)
+    #workspace.show_tabs()
 
-    # central_widget.addTab(workspace, QtGui.QIcon("../slike/student.png"), "Dobro dosli")
+    #central_widget.addTab(workspace, QtGui.QIcon("../slike/student.png"), "Dobro dosli")
     central_widget.setTabsClosable(True)
     #central_widget.removeTab(0)                                    #ako necu da imam pocetni tab, treba ga obrisati
     central_widget.tabCloseRequested.connect(delete_tab)
@@ -101,3 +91,39 @@ if __name__ == "__main__":                                  #ako pokrecemo skrui
 
     main_window.show()
     sys.exit(app.exec_())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # text_editor_wgt = QtWidgets.QTextEdit("Unesite tekst", main_window)
+    # main_window.setCentralWidget(text_editor_wgt)
+
+
+    # dock_wgt = QtWidgets.QDockWidget("Dock!!!", main_window)
+    # main_window.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dock_wgt)   #mora se importovati QtCOre!!!
+    
+    # obican_wgt = QtWidgets.QWidget(main_window)                         #napravimo obican (genericki) widget, setujemo layout i na kraju ga postavimo za centralni
+    # layout = QtWidgets.QVBoxLayout()                                    #u konstruktru se odredjuje jel horizontalan ili vertikalan, u ovom slucaju H-horizontalan ili V-vertikalan
+    # text_edit_wgt1 = QtWidgets.QTextEdit("Unesite tekst", main_window)
+    # text_edit_wgt2 = QtWidgets.QTextEdit("Unesite tekst", main_window)
+    # layout.addWidget(text_edit_wgt1)
+    # layout.addWidget(text_edit_wgt2)
+    # obican_wgt.setLayout(layout)                                        #obican widget, jer nije nam bitno koji je u ovom slucaju jer svaki moze da ima layout
+    # main_window.setCentralWidget(obican_wgt)

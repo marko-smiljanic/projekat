@@ -5,32 +5,32 @@ import pathlib
 
 
 class GenerickiModel(QtCore.QAbstractTableModel):
-    def __init__(self, data, parent=None):  # data sadrzi metapodatke o tome kako model izgleda
+    def __init__(self, data, parent=None):      #data sadrzi metapodatke o tome kako model izgleda
         super().__init__(parent)
         self.lista_objekata = []
 
         self.name = data["name"]
         self.source = data["source"]
-        self.column_names = data["column_names"]           # lista naziva svih kolona (za GUI)
+        self.column_names = data["column_names"]           #lista naziva svih kolona (za GUI)
         self.primary_key = data["primary_key"]
         self.parents = data["parents"]
         self.load_data()
 
     #pomocna metoda
-    def get_element(self, index):           #index ima oznacen red i kolonu, a jedan objekat je jedan red, index je qmodel index objekat
-        return self.lista_objekata[index.row()]   #vrati iz liste objekata na poziciji koja je jednaka redu indeksa
+    def get_element(self, index):                   #index ima oznacen red i kolonu, a jedan objekat je jedan red, index je qmodel index objekat
+        return self.lista_objekata[index.row()]     #vrati iz liste objekata na poziciji koja je jednaka redu indeksa
 
     #moramo da redefinisemo
-    def rowCount(self, index):           #jedan red u tabeli ce biti jedan objekat (recnik)
+    def rowCount(self, index):                      #jedan red u tabeli ce biti jedan objekat (recnik)
         return len(self.lista_objekata)
 
-    def columnCount(self, index):                 #hocemo samo ime i index da prikazujemo
+    def columnCount(self, index):                   #hocemo samo ime i index da prikazujemo
         return len(self.column_names)
 
     def data(self, index, role=QtCore.Qt.DisplayRole):
-        if(role == QtCore.Qt.DisplayRole):  # proveriti indeks kolone?
-            objekat = self.get_element(index)  # proveriti indeks reda?
-            return objekat[index.column()]  # npr. objekat[0] -> dohvatamo Oznaku
+        if(role == QtCore.Qt.DisplayRole):              #proveriti indeks kolone?
+            objekat = self.get_element(index)           #proveriti indeks reda?
+            return objekat[index.column()]              #npr. objekat[0] -> dohvatamo Oznaku
         return None
 
     def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):             #za labele 
@@ -41,7 +41,7 @@ class GenerickiModel(QtCore.QAbstractTableModel):
     def setData(self, index, value, role=QtCore.Qt.EditRole):
         if(role == QtCore.Qt.EditRole and value != ""):
             objekat = self.get_element(index)
-            objekat[index.column()] = value         #sacuvace prvu o ubojektu pa tu novu vrednostu setuje toj (izmenjenoj) koloni, sacuvance takodje u self.lista_objekata jer ga gadja po referenci
+            objekat[index.column()] = value                     #sacuvace prvu o ubojektu pa tu novu vrednostu setuje toj (izmenjenoj) koloni, sacuvance takodje u self.lista_objekata jer ga gadja po referenci
             self.save_data()
             return True
         return False
